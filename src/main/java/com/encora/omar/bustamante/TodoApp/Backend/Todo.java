@@ -1,16 +1,21 @@
 package com.encora.omar.bustamante.TodoApp.Backend;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PastOrPresent;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 public class Todo {
     public enum Priority {HIGH, MEDIUM, LOW}
 
+
     private int id;
     private String text;
-    private LocalDateTime dueDate; //Buscar una mejor variabel
+    private LocalDateTime dueDate;
     private boolean done;
-    private LocalDateTime doneDate; //Buscar una mejor variabel
-    private Priority priority; // High, Medium, Low
+    private LocalDateTime doneDate;
+    private Priority priority;
     private LocalDateTime creationDate; // Buscar una mejor variabel
 
     public Todo(int id, String text, LocalDateTime dueDate, boolean done, LocalDateTime doneDate, Priority priority, LocalDateTime creationDate) {

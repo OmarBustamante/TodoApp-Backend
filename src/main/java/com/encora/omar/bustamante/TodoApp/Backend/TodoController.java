@@ -1,37 +1,42 @@
 package com.encora.omar.bustamante.TodoApp.Backend;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.encora.omar.bustamante.TodoApp.Backend.Todo.Priority.*;
 
 @RestController
 public class TodoController {
-    private final List<Todo> todos = new ArrayList<>();
-
+    private final List<Todo> todos = new ArrayList<>();// crea una nueva lista de todos para la bd
+    private int idCounter = 0;
+    private int addId(){
+        idCounter++;
+        return idCounter;
+    }
+    //Agregamos datos para prbar la bd
     public TodoController(){
-        todos.add(new Todo(1, "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(2, "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(3, "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
-        todos.add(new Todo(4, "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.LOW, LocalDateTime.now()));
-        todos.add(new Todo(5, "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(6, "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
-        todos.add(new Todo(7, "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
-        todos.add(new Todo(8, "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(9, "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(10, "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
-        todos.add(new Todo(11, "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(12, "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), true, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), true, null, Todo.Priority.LOW, LocalDateTime.now()));
     }
 
     @GetMapping("/")
@@ -108,4 +113,47 @@ public class TodoController {
         return page.subList(start, end);
     }
 
+    @PostMapping("/todos")
+    public Todo create(@RequestBody @Valid Todo todo){
+        todo.setId(addId());
+        todos.add(todo);
+        return todo;
+    }
+
+    @PostMapping("todos/{id}/done")
+    public void setDone(@PathVariable int id){
+        todos.replaceAll(todo -> {
+            if(todo.getId() == id){
+                todo.setDone(true);
+            }
+            return todo;
+        });
+    }
+
+    @PutMapping("/todos/{id}")
+    public void update(
+            @PathVariable int id,
+            @RequestBody(required = false) String text,
+            @RequestBody(required = false) LocalDateTime date,
+            @RequestBody(required = false) Todo.Priority priority
+    ){
+        todos.replaceAll(todo -> {
+            if(todo.getId() == id){
+                if (text != null) todo.setText(text);
+                if (date != null) todo.setDueDate(date);
+                if (priority != null) todo.setPriority(priority);
+            }
+            return todo;
+        });
+    }
+
+    @PutMapping("/todos/{id}/undone")
+    public void undone(@PathVariable int id){
+        todos.replaceAll(todo -> {
+            if(todo.getId() == id){
+                todo.setDone(false);
+            }
+            return todo;
+        });
+    }
 }
