@@ -2,8 +2,8 @@ package com.encora.omar.bustamante.TodoApp.Backend.controller;
 
 import com.encora.omar.bustamante.TodoApp.Backend.dto.Todo;
 import jakarta.validation.Valid;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class TodoController {
     private final List<Todo> todos = new ArrayList<>();// crea una nueva lista de todos para la bd
@@ -76,11 +78,20 @@ public class TodoController {
             case "due":
                 page = page.stream().sorted(Comparator.comparing(Todo::getDueDate)).toList();
                 break;
+            case "far":
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).reversed()).toList();
+                break;
             case "dueHigh":
                 page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).thenComparing(Todo::getPriority)).toList();
                 break;
             case "dueLow":
                 page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
+                break;
+            case "farHigh":
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.reverseOrder()).thenComparing(Todo::getPriority)).toList();
+                break;
+            case "farLow":
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.reverseOrder()).thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
                 break;
             case null, default:
                 break;
@@ -155,5 +166,16 @@ public class TodoController {
             }
             return todo;
         });
+    }
+
+    @DeleteMapping("todos/{id}")
+    public ResponseEntity<String> delete(@PathVariable int id) {
+        Optional<Todo> todo = todos.stream().filter(t -> t.getId() == id).findFirst();
+        if(todo.isPresent()){
+            todos.remove(todo.get());
+            return ResponseEntity.ok("Todo Deleted");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Todo not found");
+        }
     }
 }
