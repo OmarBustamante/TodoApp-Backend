@@ -1,6 +1,8 @@
-package com.encora.omar.bustamante.TodoApp.Backend;
+package com.encora.omar.bustamante.TodoApp.Backend.controller;
 
+import com.encora.omar.bustamante.TodoApp.Backend.dto.Todo;
 import jakarta.validation.Valid;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -9,11 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.encora.omar.bustamante.TodoApp.Backend.Todo.Priority.*;
 
 @RestController
 public class TodoController {
@@ -116,6 +113,7 @@ public class TodoController {
     @PostMapping("/todos")
     public Todo create(@RequestBody @Valid Todo todo){
         todo.setId(addId());
+        todo.setCreationDate(LocalDateTime.now());
         todos.add(todo);
         return todo;
     }
@@ -125,6 +123,7 @@ public class TodoController {
         todos.replaceAll(todo -> {
             if(todo.getId() == id){
                 todo.setDone(true);
+                todo.setDoneDate(LocalDateTime.now());
             }
             return todo;
         });
@@ -133,9 +132,9 @@ public class TodoController {
     @PutMapping("/todos/{id}")
     public void update(
             @PathVariable int id,
-            @RequestBody(required = false) String text,
-            @RequestBody(required = false) LocalDateTime date,
-            @RequestBody(required = false) Todo.Priority priority
+            @RequestParam(required = false) String text,
+            @RequestParam(required = false) LocalDateTime date,
+            @RequestParam(required = false) Todo.Priority priority
     ){
         todos.replaceAll(todo -> {
             if(todo.getId() == id){
@@ -152,6 +151,7 @@ public class TodoController {
         todos.replaceAll(todo -> {
             if(todo.getId() == id){
                 todo.setDone(false);
+                todo.setDoneDate(null);
             }
             return todo;
         });

@@ -1,8 +1,4 @@
-package com.encora.omar.bustamante.TodoApp.Backend;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.PastOrPresent;
-import org.springframework.format.annotation.DateTimeFormat;
+package com.encora.omar.bustamante.TodoApp.Backend.dto;
 
 import java.time.LocalDateTime;
 
