@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 public class TodoController {
     private final List<Todo> todos = new ArrayList<>();// crea una nueva lista de todos para la bd
@@ -25,17 +25,17 @@ public class TodoController {
     //Agregamos datos para prbar la bd
     public TodoController(){
         todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.LOW, LocalDateTime.now()));
         todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
         todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), true, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", null, false, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), false, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
         todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), true, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar backend", LocalDateTime.of(2025, 2, 10, 10, 0), false, null, Todo.Priority.MEDIUM, LocalDateTime.now()));
         todos.add(new Todo(addId(), "Terminar Frontend", LocalDateTime.of(2025, 2, 12, 15, 0), false, null, Todo.Priority.HIGH, LocalDateTime.now()));
-        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), true, null, Todo.Priority.LOW, LocalDateTime.now()));
+        todos.add(new Todo(addId(), "Terminar Main", LocalDateTime.of(2025, 2, 15, 7, 30), false, null, Todo.Priority.LOW, LocalDateTime.now()));
     }
 
     @GetMapping("/")
@@ -76,22 +76,22 @@ public class TodoController {
                 page = page.stream().sorted(Comparator.comparing(Todo::getPriority).reversed()).toList();
                 break;
             case "due":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate)).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))).toList();
                 break;
             case "far":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).reversed()).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed()).toList();
                 break;
             case "dueHigh":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).thenComparing(Todo::getPriority)).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Todo::getPriority)).toList();
                 break;
             case "dueLow":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate).thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
                 break;
             case "farHigh":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.reverseOrder()).thenComparing(Todo::getPriority)).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed().thenComparing(Todo::getPriority)).toList();
                 break;
             case "farLow":
-                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.reverseOrder()).thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
+                page = page.stream().sorted(Comparator.comparing(Todo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())).reversed().thenComparing(Todo::getPriority, Comparator.reverseOrder())).toList();
                 break;
             case null, default:
                 break;
