@@ -1,17 +1,20 @@
-package com.encora.omar.bustamante.TodoApp.Backend;
+package com.encora.omar.bustamante.TodoApp.Backend.dto;
 
 import java.time.LocalDateTime;
 
 public class Todo {
+    public enum Priority {HIGH, MEDIUM, LOW}
+
+
     private int id;
     private String text;
-    private LocalDateTime dueDate; //Buscar una mejor variabel
+    private LocalDateTime dueDate;
     private boolean done;
-    private LocalDateTime doneDate; //Buscar una mejor variabel
-    private String priority; // High, Medium, Low
+    private LocalDateTime doneDate;
+    private Priority priority;
     private LocalDateTime creationDate; // Buscar una mejor variabel
 
-    public Todo(int id, String text, LocalDateTime dueDate, boolean done, LocalDateTime doneDate, String priority, LocalDateTime creationDate) {
+    public Todo(int id, String text, LocalDateTime dueDate, boolean done, LocalDateTime doneDate, Priority priority, LocalDateTime creationDate) {
         this.id = id;
         this.text = text;
         this.dueDate = dueDate;
@@ -61,11 +64,11 @@ public class Todo {
         this.doneDate = doneDate;
     }
 
-    public String getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
